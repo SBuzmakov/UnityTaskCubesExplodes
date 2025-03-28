@@ -1,18 +1,16 @@
-using System.Collections;
-using System.Collections.Generic;
+using Source.Scripts;
 using UnityEngine;
+
+[RequireComponent(typeof(Rigidbody))]
 
 public class Cube : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [SerializeField] private CubeSpawner _spawner;
 
-    // Update is called once per frame
-    void Update()
+    private void OnMouseUpAsButton()
     {
+        _spawner.SpawnCubes(transform);
         
+        Destroy(gameObject);
     }
 }

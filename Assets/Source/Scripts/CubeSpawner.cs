@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Source.Scripts
@@ -6,12 +8,16 @@ namespace Source.Scripts
     {
         [SerializeField] private CubeFactory _cubeFactory;
 
+        private List<Rigidbody> _spawnedCubes = new();
+
         private readonly float _scaleRate = 0.5f;
         private readonly float _spawnRateDecrease = 0.5f;
         private readonly int _minCubeCount = 2;
         private readonly int _maxCubeCount = 6;
 
         private float _spawnRate = 1.0f;
+
+        public List<Rigidbody> SpawnedCubes => _spawnedCubes.ToList() ;
 
         public void Construct(CubeFactory cubeFactory, float spawnRate)
         {
@@ -34,6 +40,8 @@ namespace Source.Scripts
                     ChangeScale(cube, parentTransform);
 
                     ChangeColor(cube);
+                    
+                    _spawnedCubes.Add(cube.GetComponent<Rigidbody>());
                 }
             }
         }

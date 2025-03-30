@@ -147,6 +147,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a091fdcaff523240a673373184b477f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _explosionForce: 500
+  _explosionRadius: 10
   _spawner: {fileID: 783309131118938838}
 --- !u!1 &4559079213721301914
 GameObject:

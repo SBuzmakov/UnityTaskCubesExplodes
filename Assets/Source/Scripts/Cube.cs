@@ -1,30 +1,29 @@
-using System.Collections.Generic;
-using Source.Scripts;
-using Unity.VisualScripting;
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
 
 public class Cube : MonoBehaviour
 {
-    [SerializeField] private float _explosionForce;
-    [SerializeField] private float _explosionRadius;
-    [SerializeField] private CubeSpawner _spawner;
+    public float SpawnRate { get; private set; } = 1.0f;
+    
+    public event Action<Cube> MouseClicked;
+    public event Action<Cube> Destroyed;
 
-    private void OnMouseUpAsButton()
+    private void OnDestroy()
     {
-        _spawner.SpawnCubes(transform);
-        
-        Explode(_spawner.SpawnedCubes);
-        
-        Destroy(gameObject);
+        Destroyed?.Invoke(this);
     }
 
-    private void Explode(List<Rigidbody> explodableCubes)
+    public void DecreaseSpawnRate(float spawnRateFactor)
     {
-        foreach (Rigidbody explodableCube in explodableCubes)
-        {
-            explodableCube.AddExplosionForce(_explosionForce, transform.position, _explosionRadius);
-        }    
+        SpawnRate *= spawnRateFactor;
+    }
+    
+    private void OnMouseUpAsButton()
+    {
+        MouseClicked?.Invoke(this);
+        
+        Destroy(gameObject);
     }
 }

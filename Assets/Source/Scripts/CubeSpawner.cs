@@ -1,70 +1,72 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Source.Scripts
 {
     public class CubeSpawner : MonoBehaviour
     {
-        [SerializeField] private CubeFactory _cubeFactory;
+        [SerializeField] private CubeFactory _cubeFactory ;
 
         private List<Rigidbody> _spawnedCubes = new();
 
-        private readonly float _scaleRate = 0.5f;
-        private readonly float _spawnRateDecrease = 0.5f;
         private readonly int _minCubeCount = 2;
         private readonly int _maxCubeCount = 6;
 
-        private float _spawnRate = 1.0f;
+        public event Action<List<Rigidbody>> CubesSpawned;
 
-        public List<Rigidbody> SpawnedCubes => _spawnedCubes.ToList() ;
-
-        public void Construct(CubeFactory cubeFactory, float spawnRate)
+        private void OnEnable()
         {
-            _cubeFactory = cubeFactory;
-            _spawnRate = spawnRate;
+            foreach (Cube cube in FindObjectsOfType<Cube>())
+                cube.MouseClicked += SpawnCubes;
         }
 
-        public void SpawnCubes(Transform parentTransform)
+        private void OnDisable()
         {
-            if (WillCubesBeSpawned())
+            foreach (Cube cube in FindObjectsOfType<Cube>())
+                cube.MouseClicked -= SpawnCubes;
+        }
+
+        private void SpawnCubes(Cube parentCube)
+        {
+            if (WillCubesBeSpawned(parentCube))
             {
-                for (int i = 0; i < GetCubesCount(); i++)
+                for (int i = 0; i < GetRandomCubesCount(); i++)
                 {
-                    Cube cube = _cubeFactory.Create(parentTransform.position, parentTransform.rotation);
-
-                    CubeSpawner cubeSpawner = cube.GetComponentInChildren<CubeSpawner>();
-
-                    cubeSpawner.Construct(_cubeFactory, _spawnRate * _spawnRateDecrease);
-
-                    ChangeScale(cube, parentTransform);
-
-                    ChangeColor(cube);
-                    
-                    _spawnedCubes.Add(cube.GetComponent<Rigidbody>());
+                    SpawnCube(parentCube);
                 }
+            
+                CubesSpawned?.Invoke(_spawnedCubes);
+            
+                _spawnedCubes.Clear();
             }
         }
 
-        private bool WillCubesBeSpawned()
+        private void SpawnCube(Cube parentCube)
         {
-            return Random.value <= _spawnRate; 
+            Cube cube = _cubeFactory.Create(parentCube);
+                
+            cube.MouseClicked += SpawnCubes;
+
+            cube.Destroyed += OnCubeDestroy;
+                
+            _spawnedCubes.Add(cube.GetComponent<Rigidbody>());
         }
 
-        private void ChangeScale(Cube cube, Transform parentTransform)
+        private void OnCubeDestroy(Cube cube)
         {
-            cube.transform.localScale = parentTransform.localScale * _scaleRate;
+            cube.MouseClicked -= SpawnCubes;
+
+            cube.Destroyed -= OnCubeDestroy;
         }
 
-        private void ChangeColor(Cube cube)
+        private bool WillCubesBeSpawned(Cube cube)
         {
-            Renderer cubeRenderer = cube.GetComponent<Renderer>();
-
-            Color randomColor = new Color(Random.value, Random.value, Random.value);
-            cubeRenderer.material.color = randomColor;
+            return Random.value <= cube.SpawnRate;
         }
 
-        private int GetCubesCount()
+        private int GetRandomCubesCount()
         {
             return Random.Range(_minCubeCount, _maxCubeCount + 1);
         }

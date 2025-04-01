@@ -1,29 +1,29 @@
 using System;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody))]
-
-public class Cube : MonoBehaviour
+namespace Source.Scripts
 {
-    public float SpawnRate { get; private set; } = 1.0f;
-    
-    public event Action<Cube> MouseClicked;
-    public event Action<Cube> Destroyed;
+    [RequireComponent(typeof(Rigidbody))]
 
-    private void OnDestroy()
+    public class Cube : MonoBehaviour
     {
-        Destroyed?.Invoke(this);
-    }
-
-    public void DecreaseSpawnRate(float spawnRateFactor)
-    {
-        SpawnRate *= spawnRateFactor;
-    }
+        public float SpawnRate { get; private set; } = 1.0f;
     
-    private void OnMouseUpAsButton()
-    {
-        MouseClicked?.Invoke(this);
-        
-        Destroy(gameObject);
+        public event Action<Cube> Destroyed;
+
+        private void OnDestroy()
+        {
+            Destroyed?.Invoke(this);
+        }
+
+        public void DecreaseSpawnRate(float spawnRateFactor)
+        {
+            SpawnRate *= spawnRateFactor;
+        }
+
+        public void Destroy()
+        {
+            Destroy(gameObject);
+        }
     }
 }

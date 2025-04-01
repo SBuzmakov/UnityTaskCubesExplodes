@@ -7,25 +7,25 @@ namespace Source.Scripts
 {
     public class CubeSpawner : MonoBehaviour
     {
-        [SerializeField] private CubeFactory _cubeFactory ;
-
-        private List<Rigidbody> _spawnedCubes = new();
-
         private readonly int _minCubeCount = 2;
         private readonly int _maxCubeCount = 6;
+        
+        [SerializeField] private MouseRaycast _mouseRaycast;
+        [SerializeField] private CubeFactory _cubeFactory ;
+        [SerializeField] private List<Cube> _originalCubes ;
+
+        private List<Rigidbody> _spawnedCubes = new();
 
         public event Action<List<Rigidbody>> CubesSpawned;
 
         private void OnEnable()
         {
-            foreach (Cube cube in FindObjectsOfType<Cube>())
-                cube.MouseClicked += SpawnCubes;
+            _mouseRaycast.CubeClicked += SpawnCubes;
         }
 
         private void OnDisable()
         {
-            foreach (Cube cube in FindObjectsOfType<Cube>())
-                cube.MouseClicked -= SpawnCubes;
+            _mouseRaycast.CubeClicked -= SpawnCubes;
         }
 
         private void SpawnCubes(Cube parentCube)
@@ -41,23 +41,24 @@ namespace Source.Scripts
             
                 _spawnedCubes.Clear();
             }
+            
+            parentCube.Destroy();
         }
 
         private void SpawnCube(Cube parentCube)
         {
             Cube cube = _cubeFactory.Create(parentCube);
                 
-            cube.MouseClicked += SpawnCubes;
-
             cube.Destroyed += OnCubeDestroy;
                 
+            if (cube.GetComponent<Rigidbody>() == null)
+                throw new NullReferenceException("Component Rigidbody is missing");
+            
             _spawnedCubes.Add(cube.GetComponent<Rigidbody>());
         }
 
         private void OnCubeDestroy(Cube cube)
         {
-            cube.MouseClicked -= SpawnCubes;
-
             cube.Destroyed -= OnCubeDestroy;
         }
 

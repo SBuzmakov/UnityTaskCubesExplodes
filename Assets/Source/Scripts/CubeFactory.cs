@@ -1,29 +1,32 @@
 using UnityEngine;
 
-public class CubeFactory : MonoBehaviour
+namespace Source.Scripts
 {
-    [SerializeField] private Cube _cubePrefab;
-    [SerializeField] private Painter _painter;
+    public class CubeFactory : MonoBehaviour
+    {
+        [SerializeField] private Cube _cubePrefab;
+        [SerializeField] private Painter _painter;
 
-    private readonly float _scaleRate = 0.5f;
+        private readonly float _scaleRate = 0.5f;
     
-    private float _spawnRateFactor = 0.5f;
+        private float _spawnRateFactor = 0.5f;
     
-    public Cube Create(Cube parentCube)
-    {
-        Cube cube = Instantiate(_cubePrefab, parentCube.transform.position, parentCube.transform.rotation);
+        public Cube Create(Cube parentCube)
+        {
+            Cube cube = Instantiate(_cubePrefab, parentCube.transform.position, parentCube.transform.rotation);
         
-        ChangeScale(cube, parentCube.transform);
+            ChangeScale(cube, parentCube.transform);
         
-        _painter.Repaint(cube);
+            _painter.Repaint(cube);
         
-        cube.DecreaseSpawnRate(parentCube.SpawnRate * _spawnRateFactor);
+            cube.DecreaseSpawnRate(parentCube.SpawnRate * _spawnRateFactor);
         
-        return cube;
-    }
+            return cube;
+        }
     
-    private void ChangeScale(Cube cube, Transform parentTransform)
-    {
-        cube.transform.localScale = parentTransform.localScale * _scaleRate;
+        private void ChangeScale(Cube cube, Transform parentTransform)
+        {
+            cube.transform.localScale = parentTransform.localScale * _scaleRate;
+        }
     }
 }

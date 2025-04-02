@@ -19,15 +19,11 @@ namespace Source.Scripts
         {
             Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
 
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                Cube cube = hit.collider.GetComponent<Cube>();
-
-                if (cube != null)
-                {
-                    CubeClicked?.Invoke(cube);
-                }
-            }
+            if (Physics.Raycast(ray, out RaycastHit hit) == false) 
+                return;
+            
+            if (hit.collider.TryGetComponent<Cube>(out Cube cube))
+                CubeClicked?.Invoke(cube);
         }
     }
 }

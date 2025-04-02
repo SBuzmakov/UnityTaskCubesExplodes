@@ -17,7 +17,7 @@ namespace Source.Scripts
         
             ChangeScale(cube, parentCube.transform);
         
-            _painter.Repaint(cube);
+            Painter.Repaint(cube.GetComponent<Renderer>());
         
             cube.DecreaseSpawnRate(parentCube.SpawnRate * _spawnRateFactor);
         

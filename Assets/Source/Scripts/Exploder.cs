@@ -23,7 +23,7 @@ namespace Source.Scripts
         {
             foreach (Rigidbody explodableCube in explodableCubes)
             {
-                explodableCube.AddExplosionForce(_explosionForce, transform.position, _explosionRadius);
+                explodableCube.AddExplosionForce(_explosionForce, explodableCube.position, _explosionRadius);
             }    
         }
     }

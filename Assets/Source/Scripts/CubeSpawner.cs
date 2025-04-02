@@ -9,10 +9,10 @@ namespace Source.Scripts
     {
         private readonly int _minCubeCount = 2;
         private readonly int _maxCubeCount = 6;
-        
+
         [SerializeField] private MouseRaycast _mouseRaycast;
-        [SerializeField] private CubeFactory _cubeFactory ;
-        [SerializeField] private List<Cube> _originalCubes ;
+        [SerializeField] private CubeFactory _cubeFactory;
+        [SerializeField] private List<Cube> _originalCubes;
 
         private List<Rigidbody> _spawnedCubes = new();
 
@@ -36,25 +36,23 @@ namespace Source.Scripts
                 {
                     SpawnCube(parentCube);
                 }
-            
+
                 CubesSpawned?.Invoke(_spawnedCubes);
-            
+
                 _spawnedCubes.Clear();
             }
-            
+
             parentCube.Destroy();
         }
 
         private void SpawnCube(Cube parentCube)
         {
             Cube cube = _cubeFactory.Create(parentCube);
-                
+
             cube.Destroyed += OnCubeDestroy;
-                
-            if (cube.GetComponent<Rigidbody>() == null)
-                throw new NullReferenceException("Component Rigidbody is missing");
             
-            _spawnedCubes.Add(cube.GetComponent<Rigidbody>());
+            if (cube.TryGetComponent<Rigidbody>(out Rigidbody rb))
+                _spawnedCubes.Add(rb);
         }
 
         private void OnCubeDestroy(Cube cube)
